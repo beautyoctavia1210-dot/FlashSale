@@ -5,21 +5,33 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp ({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Flash Sale",
       home: const FlashSalePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class FlashSalePage extends StatelessWidget {
-  const FlashSalePage ({super.key});
+class FlashSalePage extends StatefulWidget {
+  const FlashSalePage({super.key});
 
   @override
+  State<FlashSalePage> createState() => _FlashSalePageState();
+}
+
+class _FlashSalePageState extends State<FlashSalePage> {
+  int jumlahKeranjang = 3;
+  void tambahKeranjang(){
+    setState(() {
+      jumlahKeranjang++;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,17 +50,19 @@ class FlashSalePage extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 9,
                   backgroundColor: Colors.red,
-                  child: const Text(
-                    "3",
+                  child: Text(
+                    "$jumlahKeranjang",
+
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 11,
                     ),
                   ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
 
@@ -59,12 +73,13 @@ class FlashSalePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
+              // BANNER PROMO
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(12)
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,22 +99,24 @@ class FlashSalePage extends StatelessWidget {
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
-                        )
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 8,),
+
+                    const SizedBox(height: 8),
+
                     const Text(
                       "Berakhir dalam 02:15:40",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20,),
+              const SizedBox(height: 20),
 
               const Text(
                 "Daftar Produk",
@@ -109,30 +126,39 @@ class FlashSalePage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 12,),
+              const SizedBox(height: 12),
 
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children:  [
+
+                  // PRODUK 1
                   Expanded(
                     child: ProductCard(
                       nama: "Sepatu Sneaker",
-                      hargaAwal: "Rp 150.000",
-                      harga: "Rp 75.000",
+                      hargaAwal: "Rp 650.000",
+                      harga: "Rp 325.000",
                       diskon: "50% OFF",
-                      icon: Icons.directions_run,
+                      gambar:
+                          "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/img/VqbcmM/2022/12/19/af6ff50a-8bbd-4420-a097-fae21c46d684.jpg~tplv-aphluv4xwc-resize-jpeg:700:0.jpg",
+                      tambahKeranjang: tambahKeranjang,
                     ),
                   ),
-                  SizedBox(width: 12,),
+
+                  SizedBox(width: 12),
+
+                  // PRODUK 2
                   Expanded(
                     child: ProductCard(
                       nama: "Jam Tangan Digital",
                       hargaAwal: "Rp 300.000",
                       harga: "Rp 210.000",
                       diskon: "30% OFF",
-                      icon: Icons.watch,
+                      gambar:
+                          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+                      tambahKeranjang: tambahKeranjang,
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
@@ -143,12 +169,16 @@ class FlashSalePage extends StatelessWidget {
   }
 }
 
+
+// CLASS PRODUK
 class ProductCard extends StatefulWidget {
+
   final String nama;
   final String hargaAwal;
   final String harga;
   final String diskon;
-  final IconData icon;
+  final String gambar;
+  final VoidCallback tambahKeranjang;
 
   const ProductCard({
     super.key,
@@ -156,29 +186,35 @@ class ProductCard extends StatefulWidget {
     required this.hargaAwal,
     required this.harga,
     required this.diskon,
-    required this.icon,
+    required this.gambar,
+    required this.tambahKeranjang,
   });
 
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCardState extends State<ProductCard>{
+
+class _ProductCardState extends State<ProductCard> {
+
   bool isFavorite = false;
 
-  void toogleFavorite(){
+  void toogleFavorite() {
     setState(() {
       isFavorite = !isFavorite;
     });
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
+
     return Container(
       padding: const EdgeInsets.all(10),
+
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+
         boxShadow: const [
           BoxShadow(
             blurRadius: 5,
@@ -194,22 +230,29 @@ class _ProductCardState extends State<ProductCard>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
+              // GAMBAR PRODUK
               Container(
                 height: 130,
                 width: double.infinity,
+
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  widget.icon,
-                  size: 70,
-                  color: Colors.deepPurple,
+
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+
+                  child: Image.network(
+                    widget.gambar,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              
-              const SizedBox(height: 10,),
 
+              const SizedBox(height: 10),
+
+              // NAMA PRODUK
               Text(
                 widget.nama,
                 style: const TextStyle(
@@ -218,8 +261,9 @@ class _ProductCardState extends State<ProductCard>{
                 ),
               ),
 
-              const SizedBox(height: 5,),
+              const SizedBox(height: 5),
 
+              // HARGA AWAL
               Text(
                 widget.hargaAwal,
                 style: const TextStyle(
@@ -229,6 +273,7 @@ class _ProductCardState extends State<ProductCard>{
                 ),
               ),
 
+              // HARGA FLASH SALE
               Text(
                 widget.harga,
                 style: const TextStyle(
@@ -238,16 +283,19 @@ class _ProductCardState extends State<ProductCard>{
                 ),
               ),
 
-              const SizedBox(height: 10,),
+              const SizedBox(height: 10),
 
+              // BUTTON KERANJANG
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: widget.tambahKeranjang,
                       child: const Text(
                         "+ Keranjang",
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -256,20 +304,25 @@ class _ProductCardState extends State<ProductCard>{
             ],
           ),
 
+          // BADGE DISKON
           Positioned(
             top: 5,
             left: 5,
+
             child: Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 7,
                 vertical: 4,
               ),
+
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius:BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(6),
               ),
+
               child: Text(
                 widget.diskon,
+
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -279,15 +332,19 @@ class _ProductCardState extends State<ProductCard>{
             ),
           ),
 
+          // ICON FAVORIT
           Positioned(
-            top: 5,
-            right: 5,
+            top: 0,
+            right: 0,
+
             child: IconButton(
               onPressed: toogleFavorite,
+
               icon: Icon(
                 isFavorite
-                  ? Icons.favorite
-                  : Icons.favorite_border,
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+
                 color: Colors.red,
               ),
             ),
@@ -298,4 +355,3 @@ class _ProductCardState extends State<ProductCard>{
   }
 }
 
- 
